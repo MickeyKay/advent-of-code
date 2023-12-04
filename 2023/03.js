@@ -351,11 +351,11 @@ const partTwo = input => {
   potentialGears.forEach(gear => {
     numbersArray.forEach(number => {
       // Check up and down.
-      if (number.lineIndex == gear.y - 1 || number.lineIndex == gear.y + 1) {
+      if (Math.abs(number.lineIndex - gear.y) <= 1) {
         if (
-          number.start <= gear.x <= number.start ||
-          number.start = gear.x + 1 ||
-          number.end = gear.x - 1
+          number.startIndex <= gear.x && gear.x <= number.endIndex ||
+          number.startIndex == gear.x + 1 ||
+          number.endIndex == gear.x - 1
         ) {
           gear.partNumbers.push(number.value);
         }
@@ -363,8 +363,16 @@ const partTwo = input => {
     });
   });
 
-  console.log(numbersArray);
-  console.log(potentialGears);
+  const gears = potentialGears.filter(gear => {
+    return gear.partNumbers.length == 2;
+  })
+
+  const totalRatio = gears.reduce(
+    (accumulator, gear) => accumulator + (gear.partNumbers[0] * gear.partNumbers[1]),
+    0,
+  );
+
+  return totalRatio;
 };
 
-console.log(partTwo(TEST_INPUT  ));
+console.log(partTwo(REAL_INPUT  ));
