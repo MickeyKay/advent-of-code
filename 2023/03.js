@@ -353,7 +353,9 @@ const partTwo = input => {
       // Check up and down.
       if (number.lineIndex == gear.y - 1 || number.lineIndex == gear.y + 1) {
         if (
-          (number.start) <= (gear.x)
+          number.start <= gear.x <= number.start ||
+          number.start = gear.x + 1 ||
+          number.end = gear.x - 1
         ) {
           gear.partNumbers.push(number.value);
         }
