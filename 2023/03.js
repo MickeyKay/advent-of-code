@@ -8,7 +8,7 @@
 
 const TEST_INPUT = `
 467..114..
-...*....10
+...*......
 ..35..633.
 ......#...
 617*......
@@ -193,13 +193,13 @@ const arrayContainsSymbol = array => {
  */
 const getPartsSumPartOne = input => {
   const inputArray = convertInputToArray(input);
-  var partSum = 0;
+  let partSum = 0;
 
   inputArray.forEach((line, lineIndex) => {
     const numbersArray = [];
-    var numberValue = '';
-    var startIndex = null;
-    var endIndex = null;
+    let numberValue = '';
+    let startIndex = null;
+    let endIndex = null;
 
     line.forEach((char, charIndex)=> {
       // If digit, build number.
@@ -232,7 +232,7 @@ const getPartsSumPartOne = input => {
 
     // Check for symbol match.
     numbersArray.forEach(numberObj => {
-      var isAdjacentToSymbol = false;
+      let isAdjacentToSymbol = false;
 
       const sliceStart = Math.max(numberObj.startIndex - 1, 0);
       const sliceEnd = numberObj.endIndex + 2;
@@ -276,13 +276,13 @@ const getPartsSumPartOne = input => {
   return(partSum);
 };
 
-console.log(getPartsSumPartOne(REAL_INPUT
-  ));
+//console.log(getPartsSumPartOne(REAL_INPUT));
 
 /**
  * PART TWO
  */
-const potentialGears = {};
+const potentialGears = [];
+const numbersArray = [];
 
 const addNumberToGear = (lineIndex, charIndex, number) => {
   const potentialGearsIndex = `${lineIndex}.${charIndex}`;
@@ -293,15 +293,14 @@ const addNumberToGear = (lineIndex, charIndex, number) => {
   potentialGears[potentialGearsIndex].push(number);
 };
 
-const getGearsSum = input => {
+const parseMap = input => {
   const inputArray = convertInputToArray(input);
-  var partSum = 0;
+  let partSum = 0;
 
   inputArray.forEach((line, lineIndex) => {
-    const numbersArray = [];
-    var numberValue = '';
-    var startIndex = null;
-    var endIndex = null;
+    let numberValue = '';
+    let startIndex = null;
+    let endIndex = null;
 
     line.forEach((char, charIndex)=> {
       // If digit, build number.
@@ -314,12 +313,22 @@ const getGearsSum = input => {
           value: parseInt(numberValue),
           startIndex,
           endIndex,
+          lineIndex,
         });
 
         // Reset for new number.
         numberValue = '';
         startIndex = null;
         endIndex = null;
+
+        // Build potentialGears array.
+        if (char === '*') {
+          potentialGears.push({
+            y: lineIndex,
+            x: charIndex,
+            partNumbers: [],
+          });
+        }
       };
 
       // Handle a number at the end of the line. This is ugly, but so is life.
@@ -328,53 +337,32 @@ const getGearsSum = input => {
           value: parseInt(numberValue),
           startIndex,
           endIndex,
+          lineIndex,
         });
       };
     });
+  });
 
-    // Check for symbol match.
-    numbersArray.forEach(numberObj => {
-      var isAdjacentToSymbol = false;
+  return numbersArray;
+};
 
-      const sliceStart = Math.max(numberObj.startIndex - 1, 0);
-      const sliceEnd = numberObj.endIndex + 2;
-
-      // Check above.
-      if (lineIndex > 0) {
-        const arrayToCheck = inputArray[lineIndex -1].slice(sliceStart, sliceEnd);
-        if (arrayContainsSymbol(arrayToCheck)) {
-          partSum += numberObj.value;
-
-          return;
+const partTwo = input => {
+  parseMap(input);
+  potentialGears.forEach(gear => {
+    numbersArray.forEach(number => {
+      // Check up and down.
+      if (number.lineIndex == gear.y - 1 || number.lineIndex == gear.y + 1) {
+        if (
+          (number.start) <= (gear.x)
+        ) {
+          gear.partNumbers.push(number.value);
         }
-      }
-
-      // Check below.
-      if (lineIndex < inputArray.length - 1) {
-        const arrayToCheck = inputArray[lineIndex + 1].slice(sliceStart, sliceEnd);
-        if (arrayContainsSymbol(arrayToCheck)) {
-          partSum += numberObj.value;
-
-          return;
-        }
-      }
-
-      // Check left.
-      if (numberObj.startIndex > 0 && isSymbol(inputArray[lineIndex][numberObj.startIndex - 1])) {
-        partSum += numberObj.value;
-
-        return;
-      }
-
-      // Check right.
-      if (numberObj.endIndex < inputArray.length -1 && isSymbol(inputArray[lineIndex][numberObj.endIndex + 1])) {
-        partSum += numberObj.value;
-
-        return;
       }
     });
   });
 
-  return(partSum);
+  console.log(numbersArray);
+  console.log(potentialGears);
 };
 
+console.log(partTwo(TEST_INPUT  ));
