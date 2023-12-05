@@ -23,8 +23,16 @@ const getParsedInputLines = input => {
  * PART ONE
  */
 
+const getPartOneSolution = input => {
+
+};
+console.log(getPartOneSolution(TEST_INPUT));
 
 /**
  * PART TWO
  */
 
+const getPartTwoSolution = input => {
+
+};
+console.log(getPartTwoSolution(TEST_INPUT));
