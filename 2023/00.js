@@ -24,7 +24,7 @@ const getParsedInputLines = input => {
  */
 
 const getPartOneSolution = input => {
-
+  const parsedInput = getParsedInputLines(input);
 };
 console.log(getPartOneSolution(TEST_INPUT));
 
