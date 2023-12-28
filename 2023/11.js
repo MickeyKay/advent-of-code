@@ -226,7 +226,7 @@ const getPartOneSolution = input => {
 
       const distance = expandedRowCount + expandedColumnCount + (sortedY[1] - sortedY[0]) + (sortedX[1] - sortedX[0]);
 
-      // console.log(galaxies[i], galaxies[j], sortedX, distance);
+      console.log(galaxies[i], galaxies[j], sortedX, distance);
       sumDistance += distance;
 
       j++;
@@ -243,6 +243,66 @@ console.log(getPartOneSolution(REAL_INPUT));
  */
 
 const getPartTwoSolution = input => {
+  const map = getParsedInputLines(input).map(val => val.split(''));
+
+  const galaxies = [];
+  const expandingRows = [];
+  const expandingColumns = new Array(map[0].length).fill(0).map((val, index) => index);
+
+
+  map.forEach((row, rowIndex) => {
+    const numbersArray = [];
+    let numberValue = '';
+    let emptyRow = true;
+
+    if (row.includes('#')) {
+      emptyRow = false;
+    }
+
+    row.forEach((char, charIndex)=> {
+      if (char == '#') {
+        // Push galaxy coordinates.
+        galaxies.push([rowIndex, charIndex]);
+
+        // Track columns that expand.
+        const index = expandingColumns.indexOf(charIndex);
+        if (index >= 0) {
+          expandingColumns.splice(index, 1);
+        }
+      }
+    });
+
+    if (emptyRow) {
+      expandingRows.push(rowIndex);
+    }
+  });
+
+  let sumDistance = 0;
+
+  for (let i = 0; i < galaxies.length - 1; i++ ) {
+    const [y, x] = galaxies[i];
+
+    let j = i + 1;
+    while (galaxies[j]) {
+      const [nextY, nextX] = galaxies[j];
+
+      const sortedY = [y, nextY].sort((a, b) => a - b);
+      const sortedX = [x, nextX].sort((a, b) => a - b);
+
+      const expandedRowCount = expandingRows.filter(row => row > sortedY[0] && row < sortedY[1]).length;
+      const expandedColumnCount = expandingColumns.filter(column => column > sortedX[0] && column < sortedX[1]).length;
+      //console.log(galaxies[i], galaxies[j], expandedRowCount, expandedColumnCount);
+
+      const distance = (expandedRowCount * (1000000 - 1)) + (expandedColumnCount * (1000000 - 1)) + (sortedY[1] - sortedY[0]) + (sortedX[1] - sortedX[0]);
+
+      // console.log(galaxies[i], galaxies[j], sortedX, distance);
+      sumDistance += distance;
+
+      j++;
+    }
+  }
+
+  return sumDistance;
 
 };
-console.log(getPartTwoSolution(TEST_INPUT));
+console.log(getPartTwoSolution(REAL_INPUT));
