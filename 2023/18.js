@@ -707,15 +707,11 @@ const getPartOneSolution = input => {
     }
   });
 
-  //console.log(distanceTraveled,vertices);
-
   let shoelaceTotal = 0;
   for (let i = 0; i < vertices.length; i++ ) {
     const nextIndex = (i + 1) % vertices.length;
     shoelaceTotal += (vertices[i][0] * vertices[nextIndex][1]) - (vertices[nextIndex][0] * vertices[i][1])
   };
-
-  console.log(.5 * shoelaceTotal + distanceTraveled/2 + 1);
 
   const rowGroupedTraveledCoordinates = [];
   traveledCoordinates.forEach(([y, x]) => {
@@ -729,67 +725,78 @@ const getPartOneSolution = input => {
     //console.log(row.join(''));
   })
 
-  let total = 0;
-
-  // map.forEach((row, index) => {
-  //   const rowString = row.join('');
-  //   console.log('\n\n', rowString);
-
-  //   let startRegex = /\.#\.#/gi, startResult, indices = [];
-  //   while ( (startResult = startRegex.exec(rowString)) ) {
-  //     indices.push(startResult.index);
-  //   }
-
-  //   console.log(total, indices);
-  // });
-
-  // map.forEach((row, index) => {
-  //   let prevChar = '.';
-  //   let prevPrevChar = '.';
-  //   // console.log('\n\n---------', index);
-  //   let counting = false;
-  //   let counter = 0;
-
-  //   const rowString = row.join('');
-  //   console.log('\n', rowString);
-
-  //   row.forEach((char, indexX) => {
-
-  //     if (char == '#' || counting) {
-  //       total++;
-  //     }
-
-  //     if (char == '.' && prevChar == '#' && prevPrevChar == '.') {
-  //       counting = !counting;
-
-  //       // if (!counting) {
-  //       //   total += counter;
-  //       //   counter = 0;
-  //       // }
-  //     }
-
-  //     if (char == '.' && counting) {
-  //       counter++;
-  //     }
-
-  //     prevPrevChar = prevChar;
-  //     prevChar = char;
-
-  //     console.log(indexX, char, counting, counter, total);
-  //   });
-
-
-  // });
-
-  return total;
+  return .5 * shoelaceTotal + distanceTraveled/2 + 1;
 };
-console.log(getPartOneSolution(REAL_INPUT));
+//console.log(getPartOneSolution(REAL_INPUT));
 
 /**
  * PART TWO
  */
 
 const getPartTwoSolution = input => {
+  const parsedInput = getParsedInputLines(input);
 
+  const moves = parsedInput.map(line => {
+    let [direction, spaces, color] = line.split(' ');
+
+    const lastDigit = color[7];
+
+    if (lastDigit == 0) {
+      direction = 'R'
+    } else if (lastDigit == 1) {
+      direction = 'D'
+    } else if (lastDigit == 2) {
+      direction = 'L'
+    } else {
+      direction = 'U'
+    }
+
+    console.log(color.substring(2, 7));
+    return {
+      direction,
+      spaces: parseInt(color.substring(2, 7), 16),
+      color,
+    }
+  })
+
+  console.log(moves);
+
+  let x = 300;
+  let y = 300;
+  const traveledCoordinates = [[y,x]];
+
+  let minX = 0, maxX = 0, minY = 0, maxY = 0;
+  const map = new Array(y*2).fill('.').map(val => new Array(x*2).fill('.'));
+
+  let vertices = [[x,y]];
+  let distanceTraveled = 0;
+  moves.forEach((move, index) => {
+
+    distanceTraveled += move.spaces;
+    if (move.direction == 'L') {
+      x -= move.spaces
+    }
+    else if (move.direction == 'R') {
+      x += move.spaces;
+    }
+    else if (move.direction == 'U') {
+      y -= move.spaces;
+    }
+    else if (move.direction == 'D') {
+      y += move.spaces;
+    }
+
+    if (index != moves.length - 1) {
+      vertices.push([x,y]);
+    }
+  });
+
+  let shoelaceTotal = 0;
+  for (let i = 0; i < vertices.length; i++ ) {
+    const nextIndex = (i + 1) % vertices.length;
+    shoelaceTotal += (vertices[i][0] * vertices[nextIndex][1]) - (vertices[nextIndex][0] * vertices[i][1])
+  };
+
+  return .5 * shoelaceTotal + distanceTraveled/2 + 1;
 };
-console.log(getPartTwoSolution(TEST_INPUT));
+console.log(getPartTwoSolution(REAL_INPUT));
